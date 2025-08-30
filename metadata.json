@@ -1,0 +1,9 @@
+{
+  "name": "Visitor Management OCR",
+  "description": "Scan a visitor's card using OCR and copy the details as CSV to paste into a spreadsheet.",
+  "requestFramePermissions": [
+    "camera",
+    "geolocation"
+  ],
+  "prompt": ""
+}

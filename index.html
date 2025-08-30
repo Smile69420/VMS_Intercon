@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visitor Management System</title>
+    <link rel="stylesheet" href="index.css">
+    
+    <!-- PWA Manifest, Theme, and Icons -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0075E0">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='192' height='192' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='background-color:%230075E0; border-radius:15%25;'%3e%3cpath d='M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2'%3e%3c/path%3e%3ccircle cx='8.5' cy='7' r='4'%3e%3c/circle%3e%3cpolyline points='17 11 19 13 23 9'%3e%3c/polyline%3e%3c/svg%3e">
+    
+    <link rel="icon" href="data:;base64,="> <!-- Suppress favicon error -->
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@rc",
+    "react-dom/client": "https://esm.sh/react-dom@rc/client",
+    "@google/genai": "https://esm.sh/@google/genai@^1.5.1",
+    "react-dom/": "https://esm.sh/react-dom@^19.1.0/",
+    "react/": "https://esm.sh/react@^19.1.0/"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+<body>
+    <div id="root"></div>
+    <script type="module" src="index.tsx"></script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then(registration => {
+              console.log('ServiceWorker registration successful with scope: ', registration.scope);
+            })
+            .catch(error => {
+              console.log('ServiceWorker registration failed: ', error);
+            });
+        });
+      }
+    </script>
+<script type="module" src="/index.tsx"></script>
+</body>
+</html>
