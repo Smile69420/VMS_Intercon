@@ -10,6 +10,10 @@ import { GoogleGenAI, GenerateContentResponse, Type, HarmCategory, HarmBlockThre
 // --- CONFIGURATION & CONSTANTS ---
 
 const AppConfig = {
+    // IMPORTANT: Paste your Gemini API Key here. This key will be used for all OCR operations.
+    // Get your key from Google AI Studio: https://aistudio.google.com/app/apikey
+    GEMINI_API_KEY: 'AIzaSyDAoyhiv5vecDyvSFTzWsPxK3S_W1M5TLQ',
+
     ADMIN_PASSWORD: 'Mccia@2025',
     GOOGLE_SHEET_URL: 'https://script.google.com/macros/s/AKfycbxvDy8MM_nTJp7igLDruaG35oN1mm6WiiNx8mpPbEMH6bmUxtWsFHsE1R9Uyu4BH9C9/exec',
     GOOGLE_MAPS_API_KEY: 'AIzaSyDtag05HpGc_XlBulhz874wzneTpjgJ25E', // Key for geolocation features.
@@ -158,13 +162,6 @@ declare global {
 
 
 // --- API & UTILITY FUNCTIONS ---
-
-let ai: GoogleGenAI | null = null;
-if (process.env.API_KEY) {
-  ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-} else {
-  console.error("API_KEY environment variable not provided. OCR functionality will be disabled.");
-}
 
 const loadGoogleMapsScript = () => {
     const googleMapsApiKey = AppConfig.GOOGLE_MAPS_API_KEY;
@@ -495,13 +492,25 @@ const MemoizedNotification = React.memo(Notification);
 
 const OcrSection: React.FC<{
     onOcrComplete: (data: OcrData) => void;
-}> = ({ onOcrComplete }) => {
+    apiKey: string;
+}> = ({ onOcrComplete, apiKey }) => {
     const [imageSrc, setImageSrc] = useState<string | null>(null);
     const [isOcrLoading, setIsOcrLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [isCameraOn, setIsCameraOn] = useState(false);
     const videoRef = useRef<HTMLVideoElement>(null);
     const streamRef = useRef<MediaStream | null>(null);
+
+    const ai = useMemo(() => {
+        if (!apiKey || apiKey === 'YOUR_GEMINI_API_KEY_HERE') return null;
+        try {
+            return new GoogleGenAI({ apiKey });
+        } catch (error) {
+            console.error("Failed to initialize GoogleGenAI:", error);
+            setError("The provided Gemini API Key is invalid.");
+            return null;
+        }
+    }, [apiKey]);
 
     useEffect(() => {
         return () => { // Cleanup on unmount
@@ -565,7 +574,7 @@ const OcrSection: React.FC<{
 
     const runVisitorOcr = useCallback(async () => {
         if (!ai) {
-            setError("OCR is disabled: API key not configured.");
+            setError("OCR is disabled: The Gemini API key has not been set in the application's code.");
             return;
         }
         if (!imageSrc) {
@@ -621,7 +630,7 @@ const OcrSection: React.FC<{
         } finally {
             setIsOcrLoading(false);
         }
-    }, [imageSrc, onOcrComplete]);
+    }, [imageSrc, onOcrComplete, ai]);
 
     return (
         <div className="card ocr-section">
@@ -971,7 +980,7 @@ const App = () => {
 
             <div className="card form-section">
                 <h2>Visitor Check-In</h2>
-                <MemoizedOcrSection onOcrComplete={handleOcrComplete} />
+                <MemoizedOcrSection onOcrComplete={handleOcrComplete} apiKey={AppConfig.GEMINI_API_KEY} />
                 <MemoizedVisitorForm
                     formData={formData}
                     setFormData={setFormData}
